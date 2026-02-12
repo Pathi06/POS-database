@@ -37,12 +37,19 @@ namespace EchoPOS.Controllers
                     byte[] inputPasswordHash = HashPassword(Password);
                     byte[] dbPasswordHash = user.Password as byte[];
 
+                    // Verify password
+                    if (dbPasswordHash == null || !inputPasswordHash.SequenceEqual(dbPasswordHash))
+                    {
+                        ViewBag.Error = "Invalid username or password.";
+                        return View();
+                    }
 
                     HttpContext.Session.SetString("Username", (string)user.Name);
                     HttpContext.Session.SetString("Role", (string)user.Role);
 
+                    string role = user.Role.ToString().ToLower().Trim();
 
-                    switch (user.Role.ToString().ToLower())
+                    switch (role)
                     {
                         case "admin":
                             return RedirectToAction("Index", "Admin");
